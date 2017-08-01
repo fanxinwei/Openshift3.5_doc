@@ -36,9 +36,9 @@
 ＃export GOMAXPROCS = 1
 ```
 
-### SELinux的 {#prereq-selinux}
+#### SELinux
 
-必须在安装OpenShift Container Platform之前，在所有服务器上启用安全增强型Linux（SELinux），否则安装程序将失败。另外，`SELINUXTYPE=targeted`在_**/ etc / selinux / config**_文件中_**配置**_：
+SElinux必须在安装OpenShift Container Platform之前，在所有服务器上启用安全增强型Linux（SELinux），否则安装程序将失败。`SELINUXTYPE=targeted`在_**/ etc / selinux / config**_文件中_**配置**_：
 
 ```
 ＃此文件控制系统上SELinux的状态。
@@ -64,17 +64,17 @@ SELINUX =强制执行措施
 SELINUXTYPE = targeted
 ```
 
-### NTP {#prereq-NTP}
+#### NTP
 
-您必须启用网络时间协议（NTP）以防止群集中的主节点和节点不同步。设置`openshift_clock_enabled`于`true`在Ansible剧本对主人和节点Ansible安装在集群中启用NTP。
+您必须启用网络时间协议（NTP）以防止群集中的主节点和节点不同步。设置`openshift_clock_enabled=true`在Ansible playbook确保master和节点在集群中启用NTP。
 
 ```
 ＃openshift_clock_enabled = true
 ```
 
-### 安全警告 {#security-warning}
+#### 安全警告
 
-OpenShift Container Platform在主机上运行[容器](https://docs.openshift.com/container-platform/3.5/architecture/core_concepts/containers_and_images.html#containers)，在某些情况下，如构建操作和注册表服务，它使用特权容器。此外，这些容器访问您的主机的Docker守护程序并执行`docker build`和`docker push`操作。因此，您应该知道与`docker run`任意图像执行操作相关的固有安全风险，因为它们有效地进行root访问。
+OpenShift Container Platform在主机上运行[容器](https://docs.openshift.com/container-platform/3.5/architecture/core_concepts/containers_and_images.html#containers)，在某些情况下，如构建操作和注册表服务，必须使用特权容器。这些容器访问您的主机的Docker守护程序并执行`docker build`和`docker push`操作。因此，您应该知道与`docker run`任意图像执行操作相关的固有安全风险，因为它们有效地进行root访问。
 
 有关更多信息，请参阅这些文章：
 
@@ -88,53 +88,49 @@ OpenShift Container Platform在主机上运行[容器](https://docs.openshift.co
 
 以下部分定义了包含OpenShift Container Platform配置的环境要求。这包括网络注意事项和对外部服务的访问，例如Git存储库访问，存储和云基础设施提供商。
 
-### DNS {#prereq-dns}
+#### DNS
 
-OpenShift Container Platform需要在环境中使用功能全面的DNS服务器。这是理想的运行DNS软件的独立主机，可以为在平台上运行的主机和容器提供名称解析。
+OpenShift Container Platform需要在环境中使用功能全面的DNS服务。最理想的方式是运行分布式的DNS主机，可以为在平台上运行的主机和容器提供名称解析。
 
-|  | 在每个主机上的_**/ etc / hosts**_文件中添加条目是不够的。此文件不会复制到平台上运行的容器中。 |
-| :--- | :--- |
-
+**！注意：在每个主机上的/ etc / hosts文件中添加条目是不够的。此文件不会复制到平台上运行的容器中。**
 
 OpenShift Container Platform的关键组件在容器内运行，并使用以下过程进行名称解析：
 
 1. 默认情况下，容器从其主机收到其DNS配置文件（_**/etc/resolv.conf**_）。
 
-2. OpenShift Container Platform然后将一个DNS值插入到pod（节点的名称服务器值之上）。该值在_**/etc/origin/node/node-config.yaml**_文件中由[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数定义，该参数默认设置为主机节点的地址，因为主机使用**dnsmasq**。
+2. OpenShift Container Platform将一个DNS值插入到pod。该值在_**/etc/origin/node/node-config.yaml**_文件中由[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数定义，该参数默认设置为主机节点的地址，因为主机使用**dnsmasq**。
 
-3. 如果_**node-config.yaml**_文件中的[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数被省略，则该值默认为kubernetes服务IP，它是该pod的_**/etc/resolv.conf**_文件中的第一个名称服务器。
+3. 如果_**node-config.yaml**_文件中的[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数缺省，则该值默认为kubernetes service IP，它是该pod的_**/etc/resolv.conf**_文件中的第一个名称服务器。
 
 从OpenShift Container Platform 3.2开始，**dnsmasq**会自动在所有主节点和节点上进行配置。pod使用节点作为其DNS，节点转发请求。默认情况下，**dnsmasq**在节点上进行配置以侦听端口53，因此节点不能运行任何其他类型的DNS应用程序。
 
-|  | 节点上需要**NetworkManager**才能使用DNS IP地址填充**dnsmasq**。 |
-| :--- | :--- |
+**@提醒：节点上需要NetworkManager才能使用DNS IP地址填充dnsmasq。**
 
-
-以下是[单主站和多节点](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#single-master-multi-node)场景的DNS记录示例集：
+以下是[单master和多节点](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#single-master-multi-node)场景的DNS记录示例集：
 
 ```
-主人A 10.64.33.100
+master A 10.64.33.100
 
-node1 A 10.64.33.101
+node1  A 10.64.33.101
 
-node2 A 10.64.33.102
+node2  A 10.64.33.102
 ```
 
 如果您没有正常运行的DNS环境，您可能会遇到失败：
 
-* 产品安装通过参考可参考的脚本
+* 当设备安装通过Ansible-based脚本
 
-* 基础设施容器的部署（注册表，路由器）
+* 当基础设施容器的部署（注册表，路由器）
 
-* 访问OpenShift Container Platform Web控制台，因为它不能通过IP地址单独访问
+* 当访问OpenShift Container Platform Web控制台，因为它不能通过IP地址单独访问
 
-#### 配置主机使用DNS {#dns-config-prereq}
+#### 使用DNS配置主机
 
-确保您的环境中的每个主机都配置为从DNS服务器解析主机名。主机DNS解析的配置取决于是否启用DHCP。如果DHCP是：
+确保您的环境中的每个主机都能从DNS服务器上解析主机名。主机DNS解析的配置取决于是否启用DHCP。如果DHCP是：
 
 * 禁用，然后将您的网络接口配置为静态，并将DNS名称服务器添加到NetworkManager。
 
-* 启用后，NetworkManager调度脚本将根据DHCP配置自动配置DNS。或者，您可以[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)在_**node-config.yaml**_文件中添加一个值，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
+* 启用，NetworkManager将基于DHCP自动调度脚本配置DNS。或者，您可以[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)在_**node-config.yaml**_文件中添加一个值，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
 
   |  | 对于大多数配置，`openshift_dns_ip`在OpenShift容器平台的高级安装（使用Ansible）期间，不要设置该选项，因为此选项将覆盖设置的默认IP地址[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)。相反，允许安装程序配置每个节点使用**dnsmasq**并将请求转发给SkyDNS或外部DNS提供程序。如果您设置了该`openshift_dns_ip`选项，则应使用首先查询SkyDNS的DNS IP或SkyDNS服务或端点IP（Kubernetes服务IP）进行设置。 |
   | :--- | :--- |
