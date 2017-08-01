@@ -57,30 +57,29 @@
 
 本节概述了OpenShift容器平台环境的不同场景示例。使用这些方案作为规划自己的OpenShift Container Platform集群。
 
-```
-！注意：不支持安装后从单个master的集群升级为多个master的集群
-```
+* ！注意：不支持安装后从单个master的集群升级为多个master的集群
 
-### 单主站和多节点 {#single-master-multi-node}
+### 单主节点、多普通节点 {#single-master-multi-etcd-multi-node}
 
-下表描述了单个[主控](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)（具有嵌入式**等级**）和两个[节点](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#node)的示例环境：
+下表描述了单个master（具有嵌入式**等级**）和两个节点的示例环境：
 
 | 主机名 | 要安装的基础设施组件 |
 | :--- | :--- |
-| **master.example.com** | 主节点 |
+| **master.example.com** | 主控制节点 |
 | **node1.example.com** | 节点 |
-|  | **node2.example.com** |
+| **node2.example.com** | 节点 |
 
-### 单主，多等，多节点 {#single-master-multi-etcd-multi-node}
+### 单主节点，多etcd，多普通节点 {#single-master-multi-etcd-multi-node}
 
 下表描述了用于单个的示例环境[主](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)，三台[**ETCD**](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)主机，以及两个[节点](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#node)：
 
 | 主机名 | 要安装的基础设施组件 |
 | :--- | :--- |
 | **master.example.com** | 主节点 |
-| **etcd1.example.com** | **ETCD** |
-|  | **etcd2.example.com** |
-|  | **etcd3.example.com** |
+| **etcd1.example.com** | **ETCD节点** |
+| etcd2.example.com |  |
+| etcd3.example.com |  |
+|  |  |
 | **node1.example.com** | 节点 |
 |  | **node2.example.com** |
 
