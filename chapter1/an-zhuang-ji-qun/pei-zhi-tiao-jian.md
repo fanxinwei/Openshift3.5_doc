@@ -194,7 +194,7 @@ DNS区域的通配符必须可以完全解析为OpenShift Container Platform[路
 
 ### 网络访问 {#prereq-network-access}
 
-主节点和节点主机之间必须存在共享网络。如果您计划使用[高级安装方法](https://docs.openshift.com/container-platform/3.5/install_config/install/advanced_install.html#install-config-install-advanced-install)[为多个主机](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#high-availability-masters)配置[高可用性](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#high-availability-masters)，则还必须在安装过程中选择要配置为[虚拟IP](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master-components)（VIP）的[IP](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master-components)。您选择的IP必须在所有节点之间路由，如果使用FQDN进行配置，则应在所有节点上进行解析。
+主节点和节点主机之间必须存在共享网络。如果您计划使用[高级安装方法](https://docs.openshift.com/container-platform/3.5/install_config/install/advanced_install.html#install-config-install-advanced-install)[为多个主机](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#high-availability-masters)配置[高可用性](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#high-availability-masters)，则还必须在安装过程中选择要设置一个[虚拟IP](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master-components)（VIP）。您选择的IP必须在所有节点之间可以进行路由，如果使用FQDN进行配置，则应在所有节点上进行解析。
 
 #### 网络管理器 {#prereq-networkmanager}
 
