@@ -92,7 +92,7 @@ OpenShift Container Platform在主机上运行[容器](https://docs.openshift.co
 
 OpenShift Container Platform需要在环境中使用功能全面的DNS服务。最理想的方式是运行分布式的DNS主机，可以为在平台上运行的主机和容器提供名称解析。
 
-**！注意：在每个主机上的/ etc / hosts文件中添加条目是不够的。此文件不会复制到平台上运行的容器中。**
+**！警告：在每个主机上的/ etc / hosts文件中添加条目是不够的。此文件不会复制到平台上运行的容器中。**
 
 OpenShift Container Platform的关键组件在容器内运行，并使用以下过程进行名称解析：
 
@@ -130,10 +130,9 @@ node2  A 10.64.33.102
 
 * 禁用，然后将您的网络接口配置为静态，并将DNS名称服务器添加到NetworkManager。
 
-* 启用，NetworkManager将基于DHCP自动调度脚本配置DNS。或者，您可以[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)在_**node-config.yaml**_文件中添加一个值，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
+* 启用，NetworkManager将基于DHCP自动调度脚本配置DNS。或者，您可在_**node-config.yaml**_文件中添加一个值在[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
 
-  |  | 对于大多数配置，`openshift_dns_ip`在OpenShift容器平台的高级安装（使用Ansible）期间，不要设置该选项，因为此选项将覆盖设置的默认IP地址[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)。相反，允许安装程序配置每个节点使用**dnsmasq**并将请求转发给SkyDNS或外部DNS提供程序。如果您设置了该`openshift_dns_ip`选项，则应使用首先查询SkyDNS的DNS IP或SkyDNS服务或端点IP（Kubernetes服务IP）进行设置。 |
-  | :--- | :--- |
+**@提醒：对于大多数配置，openshift\_dns\_ip在OpenShift容器平台的高级安装（使用Ansible），不要设置该选项，因为此方案将覆盖设置的默认IP地址dnsIP。但是，允许程序员使用dnsmasq配置每个节点并将请求转发给SkyDNS或外部DNS。如果您设置了该openshift\_dns\_ip选项，则应设置SkyDNS的DNS IP，或设置SkyDNS服务或端点IP（Kubernetes服务IP）。**
 
 验证您的DNS服务器可以解析主机：
 
@@ -144,65 +143,54 @@ node2  A 10.64.33.102
 
    ＃由NetworkManager生成
 
-   搜索example.com
+   search example.com
 
-   名称服务器10.64.33.1
+   nameserer 10.64.33.1
 
    ＃nameserver由/etc/NetworkManager/dispatcher.d/99-origin-dns.sh更新
    ```
 
    在这个例子中，10.64.33.1是我们的DNS服务器的地址。
 
-2. 测试_**/etc/resolv.conf**_中列出的DNS服务器能够将主机名解析为OpenShift Container Platform环境中所有主节点和IP节点的IP地址：
+2. 测试_**/etc/resolv.conf**_中列出的DNS服务器能够将主机名解析为OpenShift Container Platform环境中所有主节点和节点的IP地址：
 
    ```
-   $ dig 
-   <
-   node_hostname
-   >
-    @ 
-   <
-   IP_address
-   >
-    + short
+   $ dig <node_hostname> @<IP_address> +short
    ```
 
-   例如：
+例如：
 
-   ```
-   $ dig master.example.com @ 10.64.33.1 + short
+```
+$ dig master.example.com @ 10.64.33.1 + short
 
-   10.64.33.100
+10.64.33.100
 
-   $ dig node1.example.com @ 10.64.33.1 + short
+$ dig node1.example.com @ 10.64.33.1 + short
 
-   10.64.33.101
-   ```
+10.64.33.101
+```
 
 #### 禁用DNSMASQ {#dns-config-prereq-disabling-dnsmasq}
 
-如果要禁用**dnsmasq**（例如，如果您的_**/etc/resolv.conf**_由除NetworkManager之外的配置工具管理），则在“可复制”手册中设置`openshift_use_dnsmasq`为**false**。
+如果要禁用**dnsmasq**（例如，如果您的_**/etc/resolv.conf**_由非NetworkManager的工具管理），可在Ansible playbook中设置`openshift_use_dnsmasq =`**false**。
 
-然而，当第一个问题**SERVFAIL发生**时，某些容器没有正确地移动到下一个域名服务器。基于Red Hat Enterprise Linux（RHEL）的容器不会受到这种影响，但是**uclibc**和**musl的**某些版本。
+然而，**uclibc**和**musl的**某些版本当**SERVFAIL**发生时，某些容器无法正确地移动到下一个域名服务器。但基于Red Hat Enterprise Linux（RHEL）的容器不会受到这种影响。
 
 #### 配置DNS通配符 {#wildcard-dns-prereq}
 
-（可选）为要使用的路由器配置通配符，以便在添加新路由时不需要更新DNS配置。
+可以配置路由器的通配符，以便在当新路径加入时不需要更新DNS配置。
 
-DNS区域的通配符必须最终解析为OpenShift Container Platform[路由器](https://docs.openshift.com/container-platform/3.5/architecture/core_concepts/routes.html#routers)的IP地址。
+DNS区域的通配符必须可以完全解析为OpenShift Container Platform[路由器](https://docs.openshift.com/container-platform/3.5/architecture/core_concepts/routes.html#routers)的IP地址。
 
 例如，为具有低生存时间值（TTL）的**cloudapps**创建通配符DNS条目，并指向将部署路由器的主机的公共IP地址：
 
 ```
-* .cloudapps.example.com。
-300 IN A 192.168.133.2
+* .cloudapps.example.com. 300 IN A 192.168.133.2
 ```
 
 在几乎所有情况下，引用虚拟机时，必须使用主机名，并且使用的主机名必须与`hostname -f`每个节点上的命令输出相匹配。
 
-|  | 在每个节点主机上的_**/etc/resolv.conf**_文件中，确保具有通配符条目的DNS服务器未列为名称服务器，或者通配符域未列在搜索列表中。否则，由OpenShift Container Platform管理的容器可能无法正确解析主机名。 |
-| :--- | :--- |
-
+**!警告：在每个节点主机上的/etc/resolv.conf文件中，确保具有通配符条目的DNS服务器未列为名称服务器，或者通配符域未列在搜索列表中。否则，由OpenShift Container Platform管理的容器可能无法正确解析主机名。**
 
 ### 网络访问 {#prereq-network-access}
 
