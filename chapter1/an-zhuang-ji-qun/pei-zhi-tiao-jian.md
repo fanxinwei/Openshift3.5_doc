@@ -4,8 +4,6 @@
 
 ### 最低硬件要求 {#hardware}
 
-系统要求因主机类型而异：
-
 ##### **Master：**
 
 * 物理或虚拟系统，或在公共或私有IaaS上运行的实例。
@@ -20,50 +18,13 @@
 * 1个vCPU。
 * 最低8 GB RAM。包含/ var /的文件系统的最小15 GB硬盘空间。另外还有最少15 GB的未分配空间用于Docker的后端存储
 
-E**tcd Node：**
+**Etcd Node：**
 
 最少20 GB的硬盘空间用于etcd数据。
 
 目前，OpenShift Container Platform将图像，build和部署元数据存储在etcd中。请将etcd放在具有大量内存和快速SSD驱动器的机器上。
 
-### 生产级硬件要求 {#production-level-hardware-requirements}
-
-测试或样品环境具有最低要求。对于生产环境，适用以下建议：
-
-主机
-
-在具有外部etcd的高度可用的OpenShift容器平台集群中，除了上表中的最低要求外，主主机还应具有每个1000个pod的1个CPU内核和1.5 GB内存。因此，2000个pod中的OpenShift Container Platform集群中主主机的建议大小将是2个CPU内核和16 GB RAM的最低要求，2个CPU内核和3 GB内存，共4个CPU内核和19 GB的RAM。
-
-在规划具有多个主节点的环境时，需要至少三个主机和主机之间的负载均衡器。
-
-OpenShift Container Platform主机高速缓存反序列化版本的资源，以缓解CPU负载。然而，在小于1000个pod的较小集群中，该缓存可能会浪费大量内存，从而可以忽略CPU负载的降低。默认缓存大小为50,000个条目，根据资源的大小，可以增加占用1到2 GB的内存。可以使用_**/etc/origin/master/master-config.yaml中**_的以下设置来减少此缓存大小：
-
-```
-kubernetesMasterConfig：
-
-  apiServerArguments：
-
-    反序列化缓存大小：
-
-    - “1000”
-```
-
-节点主机
-
-节点主机的大小取决于其工作负载的预期大小。作为OpenShift Container Platform集群管理员，您将需要计算预期的工作负载，然后增加10％的开销。对于生产环境，分配足够的资源，以便节点主机故障不会影响您的最大容量。
-
-使用以下表格来规划节点和pod的最大负载：
-
-| 主办 | 尺码推荐 |
-| :--- | :--- |
-| 每个群集的最大节点数 | 1000 |
-| 每个群集的最大pod | 120000 |
-| 每个节点的最大容量 | 250 |
-| 每个核心的最大荚数 | 10 |
-
-|  | 超级订阅节点上的物理资源将影响资源保证Kubernetes调度程序在pod放置过程中。了解可以采取哪些措施来[避免内存交换](https://docs.openshift.com/container-platform/3.5/admin_guide/overcommit.html#disabling-swap-memory)。 |
-| :--- | :--- |
-
+###  {#production-level-hardware-requirements}
 
 ### 配置核心使用 {#configuring-core-usage}
 
