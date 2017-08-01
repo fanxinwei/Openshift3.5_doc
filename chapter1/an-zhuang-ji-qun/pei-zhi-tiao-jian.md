@@ -24,9 +24,7 @@
 
 最少20 GB的硬盘空间用于etcd数据。
 
-目前，OpenShift Container Platform将图像，构建和部署元数据存储在etcd中。您必须定期修剪旧资源。如果您计划利用大量的映像/构建/部署，请将etcd放在具有大量内存和快速SSD驱动器的机器上。
-
-
+目前，OpenShift Container Platform将图像，build和部署元数据存储在etcd中。请将etcd放在具有大量内存和快速SSD驱动器的机器上。
 
 | master | 物理或虚拟系统，或在公共或私有IaaS上运行的实例。基本操作系统：具有“最小”安装选项的RHEL 7.3和来自Extras通道的最新软件包，或RHEL Atomic Host 7.3.2或更高版本。使用Docker 1.12及其依赖项也支持RHEL 7.2。2 vCPU。最小16 GB RAM。包含_**/ var /**_的文件系统的最小40 GB硬盘空间。 |
 | :---: | :--- |
@@ -37,7 +35,7 @@
 | :--- | :--- |
 
 
-|  | 满足RHEL Atomic Host中的_**/ var /**_file系统大小要求需要更改默认配置。有关在安装期间或安装后进行配置的说明，请参阅[管理Red Hat Enterprise Linux Atomic主机中的存储](https://access.redhat.com/documentation/en/red-hat-enterprise-linux-atomic-host/version-7/getting-started-with-containers/#managing_storage_in_red_hat_enterprise_linux_atomic_host)。 |
+|  | 满足RHEL Atomic Host中的\_**/ var /**\_file系统大小要求需要更改默认配置。有关在安装期间或安装后进行配置的说明，请参阅[管理Red Hat Enterprise Linux Atomic主机中的存储](https://access.redhat.com/documentation/en/red-hat-enterprise-linux-atomic-host/version-7/getting-started-with-containers/#managing_storage_in_red_hat_enterprise_linux_atomic_host)。 |
 | :--- | :--- |
 
 
@@ -82,7 +80,7 @@ kubernetesMasterConfig：
 
 ### 配置核心使用 {#configuring-core-usage}
 
-默认情况下，OpenShift Container Platform主机和节点使用它们运行的​​系统中的所有可用内核。您可以通过设置[**`GOMAXPROCS`**环境变量](https://golang.org/pkg/runtime/)来选择您希望OpenShift Container Platform使用的核心数量。
+默认情况下，OpenShift Container Platform主机和节点使用它们运行的​​系统中的所有可用内核。您可以通过设置[`GOMAXPROCS`环境变量](https://golang.org/pkg/runtime/)来选择您希望OpenShift Container Platform使用的核心数量。
 
 例如，在启动服务器之前运行以下操作，使OpenShift Container Platform仅在一个核心上运行：
 
@@ -92,7 +90,7 @@ kubernetesMasterConfig：
 
 ### SELinux的 {#prereq-selinux}
 
-必须在安装OpenShift Container Platform之前，在所有服务器上启用安全增强型Linux（SELinux），否则安装程序将失败。另外，**`SELINUXTYPE=targeted`**在_**/ etc / selinux / config**_文件中_**配置**_：
+必须在安装OpenShift Container Platform之前，在所有服务器上启用安全增强型Linux（SELinux），否则安装程序将失败。另外，`SELINUXTYPE=targeted`在_**/ etc / selinux / config**_文件中_**配置**_：
 
 ```
 ＃此文件控制系统上SELinux的状态。
@@ -155,9 +153,9 @@ OpenShift Container Platform的关键组件在容器内运行，并使用以下�
 
 1. 默认情况下，容器从其主机收到其DNS配置文件（_**/etc/resolv.conf**_）。
 
-2. OpenShift Container Platform然后将一个DNS值插入到pod（节点的名称服务器值之上）。该值在_**/etc/origin/node/node-config.yaml**_文件中由[**`dnsIP`**](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数定义，该参数默认设置为主机节点的地址，因为主机使用**dnsmasq**。
+2. OpenShift Container Platform然后将一个DNS值插入到pod（节点的名称服务器值之上）。该值在_**/etc/origin/node/node-config.yaml**_文件中由[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数定义，该参数默认设置为主机节点的地址，因为主机使用**dnsmasq**。
 
-3. 如果_**node-config.yaml**_文件中的[**`dnsIP`**](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数被省略，则该值默认为kubernetes服务IP，它是该pod的_**/etc/resolv.conf**_文件中的第一个名称服务器。
+3. 如果_**node-config.yaml**_文件中的[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)参数被省略，则该值默认为kubernetes服务IP，它是该pod的_**/etc/resolv.conf**_文件中的第一个名称服务器。
 
 从OpenShift Container Platform 3.2开始，**dnsmasq**会自动在所有主节点和节点上进行配置。pod使用节点作为其DNS，节点转发请求。默认情况下，**dnsmasq**在节点上进行配置以侦听端口53，因此节点不能运行任何其他类型的DNS应用程序。
 
@@ -189,9 +187,9 @@ node2 A 10.64.33.102
 
 * 禁用，然后将您的网络接口配置为静态，并将DNS名称服务器添加到NetworkManager。
 
-* 启用后，NetworkManager调度脚本将根据DHCP配置自动配置DNS。或者，您可以[**`dnsIP`**](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)在_**node-config.yaml**_文件中添加一个值，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
+* 启用后，NetworkManager调度脚本将根据DHCP配置自动配置DNS。或者，您可以[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)在_**node-config.yaml**_文件中添加一个值，以便预先安装pod的_**resolv.conf**_文件。然后，第二个名称服务器由主机的第一个名称服务器定义。默认情况下，这将是节点主机的IP地址。
 
-  |  | 对于大多数配置，**`openshift_dns_ip`**在OpenShift容器平台的高级安装（使用Ansible）期间，不要设置该选项，因为此选项将覆盖设置的默认IP地址[**`dnsIP`**](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)。相反，允许安装程序配置每个节点使用**dnsmasq**并将请求转发给SkyDNS或外部DNS提供程序。如果您设置了该**`openshift_dns_ip`**选项，则应使用首先查询SkyDNS的DNS IP或SkyDNS服务或端点IP（Kubernetes服务IP）进行设置。 |
+  |  | 对于大多数配置，`openshift_dns_ip`在OpenShift容器平台的高级安装（使用Ansible）期间，不要设置该选项，因为此选项将覆盖设置的默认IP地址[`dnsIP`](https://docs.openshift.com/container-platform/3.5/admin_solutions/master_node_config.html#node-config-options)。相反，允许安装程序配置每个节点使用**dnsmasq**并将请求转发给SkyDNS或外部DNS提供程序。如果您设置了该`openshift_dns_ip`选项，则应使用首先查询SkyDNS的DNS IP或SkyDNS服务或端点IP（Kubernetes服务IP）进行设置。 |
   | :--- | :--- |
 
 验证您的DNS服务器可以解析主机：
@@ -307,7 +305,7 @@ OpenShift Container Platform安装会在每个主机上自动创建一组内部�
 
 |  |  |  |
 | :--- | :--- | :--- |
-| **9000** | TCP | 如果选择**`native`**HA方法，可选择允许访问HAProxy统计信息页面。 |
+| **9000** | TCP | 如果选择`native`HA方法，可选择允许访问HAProxy统计信息页面。 |
 
 |  |  |  |
 | :--- | :--- | :--- |
@@ -331,9 +329,9 @@ OpenShift Container Platform安装会在每个主机上自动创建一组内部�
 
 * 当部署使用SDN时，通过服务代理访问pod网络，除非它正在从注册表部署的同一节点访问注册表。
 
-* OpenShift Container Platform内部DNS不能通过SDN接收。根据检测到的值**`openshift_facts`**，或者如果**`openshift_ip`**和**`openshift_public_ip`**值被覆盖，它将是计算的值**`openshift_ip`**。对于非云部署，这将默认与主主机上的默认路由相关联的IP地址。对于云部署，它将默认为由云元数据定义的与第一个内部接口相关联的IP地址。
+* OpenShift Container Platform内部DNS不能通过SDN接收。根据检测到的值`openshift_facts`，或者如果`openshift_ip`和`openshift_public_ip`值被覆盖，它将是计算的值`openshift_ip`。对于非云部署，这将默认与主主机上的默认路由相关联的IP地址。对于云部署，它将默认为由云元数据定义的与第一个内部接口相关联的IP地址。
 
-* 主主机使用端口**10250**到达节点，不会超过SDN。它取决于目标主机的部署，并使用计算的值**`openshift_hostname`**和**`openshift_public_hostname`**。
+* 主主机使用端口**10250**到达节点，不会超过SDN。它取决于目标主机的部署，并使用计算的值`openshift_hostname`和`openshift_public_hostname`。
 
 |  |  |  |
 | :--- | :--- | :--- |
@@ -365,7 +363,7 @@ Kubernetes[持久性卷](https://docs.openshift.com/container-platform/3.5/archi
 
 #### 覆盖检测到的IP地址和主机名 {#overriding-detected-ip-addresses-and-host-names}
 
-某些部署要求用户覆盖主机的检测到的主机名和IP地址。要查看默认值，请运行**`openshift_facts`**playbook：
+某些部署要求用户覆盖主机的检测到的主机名和IP地址。要查看默认值，请运行`openshift_facts`playbook：
 
 ```
 ＃ansible-playbook playbooks / byo / openshift_facts.yml
@@ -377,13 +375,13 @@ Kubernetes[持久性卷](https://docs.openshift.com/container-platform/3.5/archi
 
 | 变量 | 用法 |
 | :--- | :--- |
-| **`hostname`** | 应该从实例本身解决到内部IP。**`openshift_hostname`**覆盖。 |
-| **`ip`** | 应该是实例的内部IP。**`openshift_ip`**将覆盖。 |
-| **`public_hostname`** | 应该从云外的主机解决外部IP。供应商**`openshift_public_hostname`**覆盖。 |
-| **`public_ip`** | 应该是与实例相关联的外部可访问的IP。**`openshift_public_ip`**覆盖。 |
-| **`use_openshift_sdn`** | 应该是真实的，除非云是GCE。**`openshift_use_openshift_sdn`**覆盖。 |
+| `hostname` | 应该从实例本身解决到内部IP。`openshift_hostname`覆盖。 |
+| `ip` | 应该是实例的内部IP。`openshift_ip`将覆盖。 |
+| `public_hostname` | 应该从云外的主机解决外部IP。供应商`openshift_public_hostname`覆盖。 |
+| `public_ip` | 应该是与实例相关联的外部可访问的IP。`openshift_public_ip`覆盖。 |
+| `use_openshift_sdn` | 应该是真实的，除非云是GCE。`openshift_use_openshift_sdn`覆盖。 |
 
-|  | 如果**`openshift_hostname`**设置为除元数据提供**`private-dns-name`**值之外的值，那么这些提供程序的本机云集成将不再起作用。 |
+|  | 如果`openshift_hostname`设置为除元数据提供`private-dns-name`值之外的值，那么这些提供程序的本机云集成将不再起作用。 |
 | :--- | :--- |
 
 
@@ -391,14 +389,14 @@ Kubernetes[持久性卷](https://docs.openshift.com/container-platform/3.5/archi
 
 | 变量 | 用法 |
 | :--- | :--- |
-| **`hostname`** | 用户在没有配置这两个VPC的是安装**`DNS hostnames`**和**`DNS resolution`**。 |
-| **`ip`** | 如果他们有多个网络接口配置，并且希望使用一个默认网络接口，可能是可能的。你必须先设置**`openshift_set_node_ip`**到`True`。否则，SDN将尝试使用该**`hostname`**设置或尝试解析IP的主机名。 |
-| **`public_hostname`** | 未配置VPC子网的主实例**`Auto-assign Public IP`**。对于外部访问此主服务器，您需要配置ELB或其他负载平衡器，以提供所需的外部访问，或者需要通过VPN连接连接到主机的内部名称。禁用元数据的主实例。这个值实际上不是由节点使用的。 |
-| **`public_ip`** | 未配置VPC子网的主实例**`Auto-assign Public IP`**。禁用元数据的主实例。这个值实际上不是由节点使用的。 |
+| `hostname` | 用户在没有配置这两个VPC的是安装`DNS hostnames`和`DNS resolution`。 |
+| `ip` | 如果他们有多个网络接口配置，并且希望使用一个默认网络接口，可能是可能的。你必须先设置`openshift_set_node_ip`到`True`。否则，SDN将尝试使用该`hostname`设置或尝试解析IP的主机名。 |
+| `public_hostname` | 未配置VPC子网的主实例`Auto-assign Public IP`。对于外部访问此主服务器，您需要配置ELB或其他负载平衡器，以提供所需的外部访问，或者需要通过VPN连接连接到主机的内部名称。禁用元数据的主实例。这个值实际上不是由节点使用的。 |
+| `public_ip` | 未配置VPC子网的主实例`Auto-assign Public IP`。禁用元数据的主实例。这个值实际上不是由节点使用的。 |
 
-如果设置**`openshift_hostname`**为除元数据提供的**`private-dns-name`**值之外的其他东西，则这些提供商的本地云集成将不再起作用。
+如果设置`openshift_hostname`为除元数据提供的`private-dns-name`值之外的其他东西，则这些提供商的本地云集成将不再起作用。
 
-特别是对于EC2的主机，它们必须在VPC同时具有部署**`DNS host names`**和**`DNS resolution`**启用，并且**`openshift_hostname`**不应该被重写。
+特别是对于EC2的主机，它们必须在VPC同时具有部署`DNS host names`和`DNS resolution`启用，并且`openshift_hostname`不应该被重写。
 
 #### 云提供商的安装后配置 {#post-installation-configuration-for-cloud-providers}
 
