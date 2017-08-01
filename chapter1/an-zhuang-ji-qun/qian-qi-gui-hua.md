@@ -55,11 +55,11 @@
 
 ## 环境情景 {#environment-scenarios}
 
-本节概述了OpenShift容器平台环境的不同场景示例。使用这些方案作为规划自己的OpenShift Container Platform集群的基础。
+本节概述了OpenShift容器平台环境的不同场景示例。使用这些方案作为规划自己的OpenShift Container Platform集群。
 
-|  | 不支持在安装后从单个主群集迁移到多个主群。 |
-| :--- | :--- |
-
+```
+！注意：不支持安装后从单个master的集群升级为多个master的集群
+```
 
 ### 单主站和多节点 {#single-master-multi-node}
 
