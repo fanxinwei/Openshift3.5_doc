@@ -8,7 +8,7 @@
 
 * _您的群集中需要多少个pod？_“[大小注意事项”](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#sizing)部分为节点和pod提供了限制，因此您可以计算出环境所需的大小。
 
-* _是否需要_[_高可用性_](https://docs.openshift.com/container-platform/3.5/admin_guide/high_availability.html#admin-guide-high-availability)_？_推荐使用高可用性进行容错。在这种情况下，您可能希望使用[多Mater](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#multi-masters-using-native-ha)[使用Native HA](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#multi-masters-using-native-ha)示例作为您的环境的基础。
+* _是否需要_[_高可用性_](https://docs.openshift.com/container-platform/3.5/admin_guide/high_availability.html#admin-guide-high-availability)_？_推荐使用高可用性进行容错。在这种情况下，您可能希望使用[多Mater](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#multi-masters-using-native-ha)[使用Native HA](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#multi-masters-using-native-ha)示例作为的环境。
 
 * _您要使用哪种安装类型：_[_RPM或集装箱式_](https://docs.openshift.com/container-platform/3.5/install_config/install/planning.html#rpm-vs-containerized)_？_这两个安装都提供了一个工作的OpenShift容器平台环境，但您可能希望安装，管理和更新服务的特定方法。
 
@@ -57,7 +57,7 @@
 
 本节概述了OpenShift容器平台环境的不同场景示例。使用这些方案作为规划自己的OpenShift Container Platform集群。
 
-* ！注意：不支持安装后从单个master的集群升级为多个master的集群
+* ！注意：不支持单个master的集群安装后升级为多个master的集群
 
 ### 单主节点、多普通节点 {#single-master-multi-etcd-multi-node}
 
@@ -73,47 +73,33 @@
 
 下表描述了用于单个的示例环境[主](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)，三台[**ETCD**](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)主机，以及两个[节点](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#node)：
 
+ETCD: **etcd**存储持续的master状态，而其他组件将监视etcd进行自身状态的调整。在部署中为了高可用性，可选择将**etcd**使用2n + 1的模式进行部署。
+
 | 主机名 | 要安装的基础设施组件 |
 | :--- | :--- |
 | **master.example.com** | 主节点 |
-| **etcd1.example.com** | **ETCD节点** |
+| **etcd1.example.com** | ETCD节点 |
 | etcd2.example.com |  |
 | etcd3.example.com |  |
-|  |  |
 | **node1.example.com** | 节点 |
-|  | **node2.example.com** |
+| noed2.example.com |  |
 
-|  | 指定多个**etcd**主机时，安装并配置external**etcd**。不支持OpenShift Container Platform的嵌入式**集群**。 |
-| :--- | :--- |
+### 多个Master使用Native HA {#multi-masters-using-native-ha}
 
-
-### 使用本机HA的多个大师 {#multi-masters-using-native-ha}
-
-下面描述三个的示例环境[的主人](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)，一个HAProxy的负载平衡器，三台[**ETCD**](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)主机，以及两个[节点](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#node)使用`native`HA方法：
+下面描述示例环境为3个master，一个HAProxy的负载均衡器，三台[**ETCD**](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#master)主机，以及两个[节点](https://docs.openshift.com/container-platform/3.5/architecture/infrastructure_components/kubernetes_infrastructure.html#node)，使用本地HA方法：
 
 | 主机名 | 要安装的基础设施组件 |
 | :--- | :--- |
-| **master1.example.com** | 主（使用本机HA集群）和节点 |
-|  | **master2.example.com** |
-|  | **master3.example.com** |
-| **lb.example.com** | HAProxy负载平衡API主端点 |
-| **etcd1.example.com** | **ETCD** |
-|  | **etcd2.example.com** |
-|  | **etcd3.example.com** |
+| **master1.example.com** | mater节点（使用本地HA集群） |
+| master2.example.com |  |
+| master3.example.com |  |
+| **lb.example.com** | HAProxy负载均衡 |
+| **etcd1.example.com** | ETCD |
+| etcd2.example.com |  |
 | **node1.example.com** | 节点 |
-|  | **node2.example.com** |
-
-|  | 指定多个**etcd**主机时，安装并配置external**etcd**。不支持OpenShift Container Platform的嵌入式**集群**。 |
-| :--- | :--- |
+| node2.example.com |  |
 
 
-### 独立注册表 {#planning-stand-alone-registry}
 
-您还可以使用OpenShift Container Platform的集成注册表来安装OpenShift Container Platform作为独立注册表。有关此方案的详细信息，请参阅[安装独立注册表](https://docs.openshift.com/container-platform/3.5/install_config/install/stand_alone_registry.html#install-config-installing-stand-alone-registry)。
 
-## RPM与Containerized {#rpm-vs-containerized}
-
-RPM安装通过包管理安装所有服务，并将服务配置为在同一用户空间内运行，而容器化安装使用容器映像安装服务，并在单个容器中运行单独的服务。
-
-有关配置安装以使用容器化服务的更多详细信息，请参阅[在集群化主机上安装](https://docs.openshift.com/container-platform/3.5/install_config/install/rpm_vs_containerized.html#install-config-install-rpm-vs-containerized)主题
 
