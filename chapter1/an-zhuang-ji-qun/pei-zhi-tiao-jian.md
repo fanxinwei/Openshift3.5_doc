@@ -45,24 +45,23 @@
 
 ＃SELINUX =可以使用以下三个值之一：
 
-＃enforcecing  - 执行SELinux安全策略。
+＃     enforcecing  - 执行SELinux安全策略。
 
-＃permissive  -  SELinux打印警告而不是强制执行。
+＃     permissive  -  SELinux打印警告而不是强制执行。
 
-＃disabled  - 没有加载SELinux策略。
+＃     disabled  - 没有加载SELinux策略。
 
 SELINUX =强制执行措施
 
 ＃SELINUXTYPE =可以使用以下三个值之一：
 
-＃针对性 - 目标进程受到保护，
+＃     targeted - 目标进程受到保护
 
-＃minimum  - 修改目标政策。
-只有选定的进程受到保护。
+＃     minimum  - 修改目标政策，只有选定的进程受到保护。
 
-＃mls  - 多级安全防护。
+＃     mls  - 多级安全防护。
 
-SELINUXTYPE =针对性
+SELINUXTYPE = targeted
 ```
 
 ### NTP {#prereq-NTP}
